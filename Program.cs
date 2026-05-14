@@ -8,4 +8,4 @@ app.UseDeveloperExceptionPage();
 app.UseStaticFiles();
 app.UseStatusCodePages();
 app.UseMvcWithDefaultRoute();
-app.Run();
+app.Run(); 

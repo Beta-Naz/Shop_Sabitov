@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.3.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controller\" />
+    <Folder Include="Views\" />
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>

@@ -47,5 +47,11 @@ namespace Shop.Controllers
 
             return View(_vmItems);
         }
+        [HttpGet]
+        public ViewResult Add()
+        {
+            IEnumerable<Category> categories = _iAllCategories.AllCategories;
+            return View(categories);
+        }
     }
 }

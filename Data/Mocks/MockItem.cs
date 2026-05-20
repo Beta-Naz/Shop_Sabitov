@@ -48,6 +48,24 @@ namespace Shop.Data.Mocks
                         Price = 3699,
                         Category = _category.AllCategories.Where(x => x.Id == 0).First()
                     },
+                    new Item
+                    {
+                        Id = 3,
+                        Name = "Сфера зеленная",
+                        Description = "Зеленный",
+                        Img = "/img/violet_sphere.jpg",
+                        Price = 3699,
+                        Category = _category.AllCategories.Where(x => x.Id == 1).First()
+                    },
+                    new Item
+                    {
+                        Id = 3,
+                        Name = "Сфера фиолетовая",
+                        Description = "Кольмисильма",
+                        Img = "/img/green_sphere.jpg",
+                        Price = 3699,
+                        Category = _category.AllCategories.Where(x => x.Id == 1).First()
+                    },
                 };
             }
         }

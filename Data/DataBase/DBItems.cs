@@ -24,7 +24,7 @@ namespace Shop.Data.DataBase
                         Description = ItemsData.IsDBNull(2) ? "" : ItemsData.GetString(2),
                         Img = ItemsData.IsDBNull(3) ? "" : ItemsData.GetString(3),
                         Price = ItemsData.IsDBNull(4) ? -1 : ItemsData.GetInt32(4),
-                        Category = ItemsData.IsDBNull(5) ? null : Categories.Where(x => x.Id == ItemsData.GetInt32(5)).First()
+                        Category = ItemsData.IsDBNull(5) ? null : Categories.Where(x => x.Id == ItemsData.GetInt32(5)).FirstOrDefault()
                     });
                 }
                 MySqlConnection.Close();

@@ -6,8 +6,8 @@ namespace Shop.Data.Common
     {
         private readonly static string _connectionData =
             @"server=127.0.0.1;
-              database=shop
-              uid=root
+              database=shop;
+              uid=root;
               pwd=1234";
         public static MySqlConnection CreateConnection()
         {

@@ -69,7 +69,6 @@ namespace Shop.Data.DataBase
                 $"('{Item.Name}', '{Item.Description}', '{Item.Img}', {Item.Price}, {Item.Category.Id});",
                 MySqlConnection);
             MySqlConnection.Close();
-
             int IdItem = -1;
             MySqlConnection = Connection.CreateConnection();
             MySqlDataReader mySqlDataReaderItem = Connection.Query(

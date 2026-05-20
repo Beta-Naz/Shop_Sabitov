@@ -6,5 +6,6 @@ namespace Shop.Data.Interfaces
     {
         public IEnumerable<Item> AllItems { get; }
         public IEnumerable<Item> FindItems(string searchQuery);
+        public int Add(Item item);
     }
 }

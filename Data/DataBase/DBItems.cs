@@ -2,6 +2,7 @@
 using Shop.Data.Common;
 using Shop.Data.Interfaces;
 using Shop.Data.Models;
+using Shop.Data.ViewModell;
 namespace Shop.Data.DataBase
 {
     public class DBItems : IItem
@@ -59,6 +60,30 @@ namespace Shop.Data.DataBase
             }
             MySqlConnection.Close();
             return items;
+        }
+        public int Add(Item Item)
+        {
+            MySqlConnection MySqlConnection = Connection.CreateConnection();
+            Connection.Query(
+                $"INSERT INTO `items` (`Name`, `Description`, `Img`, `Price`, `IdCategory`) VALUES " +
+                $"('{Item.Name}', '{Item.Description}', '{Item.Img}', {Item.Price}, {Item.Category.Id});",
+                MySqlConnection);
+            MySqlConnection.Close();
+
+            int IdItem = -1;
+            MySqlConnection = Connection.CreateConnection();
+            MySqlDataReader mySqlDataReaderItem = Connection.Query(
+                $"SELECT `Id` FROM `items` WHERE `Name` = " +
+                $"'{Item.Name}' AND `Description` = '{Item.Description}' AND " +
+                $"`Price` = {Item.Price} AND `IdCategory` = {Item.Category.Id};",
+                MySqlConnection);
+            if (mySqlDataReaderItem.HasRows)
+            {
+                mySqlDataReaderItem.Read();
+                IdItem = mySqlDataReaderItem.GetInt32(0);
+            }
+            MySqlConnection.Close();
+            return IdItem;
         }
     }
 }

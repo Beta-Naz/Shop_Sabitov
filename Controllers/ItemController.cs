@@ -2,19 +2,21 @@
 using Shop.Data.Interfaces;
 using Shop.Data.Models;
 using Shop.Data.ViewModell;
-
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Shop.Controllers
 {
     public class ItemController : Controller
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
         private IItem _iAllItems;
         private ICategory _iAllCategories;
         private VMItems _vmItems = new VMItems();
-        public ItemController(IItem iAllItems, ICategory iAllCategories)
+        public ItemController(IItem iAllItems, ICategory iAllCategories, IHostingEnvironment hostingEnvironment)
         {
             _iAllItems = iAllItems;
             _iAllCategories = iAllCategories;
+            _hostingEnvironment = hostingEnvironment;
         }
         public ViewResult List(int id = -1, string sortOrder = "", string searchString = "")
         {
@@ -52,6 +54,27 @@ namespace Shop.Controllers
         {
             IEnumerable<Category> categories = _iAllCategories.AllCategories;
             return View(categories);
+        }
+        [HttpPost]
+        public RedirectResult Add(string name, string description, IFormFile files, float price, int idCategory)
+        {
+            if (files != null)
+            {
+                var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "img");
+                var filePath = Path.Combine(uploads, files.FileName);
+                files.CopyTo(new FileStream(filePath, FileMode.Create));
+            }
+
+            Item newItems = new Item();
+            newItems.Name = name;
+            newItems.Description = description;
+            newItems.Img = files.FileName;
+            newItems.Price = Convert.ToInt32(price);
+            newItems.Category = new Category() { Id = idCategory };
+
+            int id = _iAllItems.Add(newItems);
+
+            return Redirect("/Items/Update?id=" + id);
         }
     }
 }

@@ -1,0 +1,24 @@
+﻿@using Shop.Data.Models
+@model Category
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Редактирование категории";
+}
+
+<h2>Редактирование категории</h2>
+
+<form method="post" action="/Category/Update">
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <div>
+        Наименование:
+        <br /> <input name="name" value="@Model.Name" required />
+    </div>
+    <div>
+        Описание:
+        <br /> <textarea name="description">@Model.Description</textarea>
+    </div>
+    <input type="submit" value="Сохранить" />
+    <a href="/Category/List">Отмена</a>
+</form>

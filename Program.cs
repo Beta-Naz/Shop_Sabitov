@@ -1,6 +1,5 @@
 using Shop.Data.DataBase;
 using Shop.Data.Interfaces;
-using Shop.Data.Mocks;
 
 var builder = WebApplication.CreateBuilder(args);
 

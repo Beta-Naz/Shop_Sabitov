@@ -26,5 +26,25 @@ namespace Shop.Data.Mocks
                 };
             }
         }
+
+        public void Add(Category category)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Category GetCategory(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Category category)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

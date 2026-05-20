@@ -3,7 +3,7 @@ using Shop.Data.Models;
 
 namespace Shop.Data.Mocks
 {
-    public class MockItem
+    public class MockItem : IItem
     {
         private ICategory _category = new MockCaregory();
         public IEnumerable<Item> AllItems
@@ -68,6 +68,31 @@ namespace Shop.Data.Mocks
                     },
                 };
             }
+        }
+
+        public int Add(Item item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Item> FindItems(string searchQuery)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Item GetItem(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Item item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

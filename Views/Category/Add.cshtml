@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "_Layout";
+    ViewBag.Title = "Добавление категории";
+}
+
+<h2>Добавление новой категории</h2>
+
+<form method="post" action="/Category/Add">
+    <div>
+        Наименование:
+        <br /> <input name="name" placeholder="Наименование категории" required />
+    </div>
+    <div>
+        Описание:
+        <br /> <textarea name="description" placeholder="Описание категории"></textarea>
+    </div>
+    <input type="submit" value="Добавить категорию" />
+    <a href="/Category/List">Отмена</a>
+</form>

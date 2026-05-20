@@ -17,7 +17,7 @@ namespace Shop.Data.Mocks
                         Id = 0,
                         Name = "Куб черный",
                         Description = "Черный",
-                        Img = "",
+                        Img = "/img/dark_cube.jpg",
                         Price = 3699,
                         Category = _category.AllCategories.Where(x => x.Id == 0).First()
                     },
@@ -26,7 +26,7 @@ namespace Shop.Data.Mocks
                         Id = 1,
                         Name = "Куб красный",
                         Description = "Красный",
-                        Img = "",
+                        Img = "/img/red_cube.jpg",
                         Price = 3699,
                         Category = _category.AllCategories.Where(x => x.Id == 0).First()
                     },
@@ -35,7 +35,7 @@ namespace Shop.Data.Mocks
                         Id = 2,
                         Name = "Куб желтый",
                         Description = "Желтый",
-                        Img = "",
+                        Img = "/img/yellow_cube.jpg",
                         Price = 3699,
                         Category = _category.AllCategories.Where(x => x.Id == 0).First()
                     },
@@ -44,7 +44,7 @@ namespace Shop.Data.Mocks
                         Id = 3,
                         Name = "Куб зеленный",
                         Description = "Зеленный",
-                        Img = "",
+                        Img = "/img/green_cube.jpg",
                         Price = 3699,
                         Category = _category.AllCategories.Where(x => x.Id == 0).First()
                     },

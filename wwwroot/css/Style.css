@@ -33,11 +33,12 @@
     width: 50px;
     float: left;
 }
-.item .data{
-    margin-left:120px;
+.item .data {
+    margin-left: 120px;
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
 h3{
     margin: 0px;
 }

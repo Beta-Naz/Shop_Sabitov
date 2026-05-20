@@ -31,5 +31,34 @@ namespace Shop.Data.DataBase
                 return items;
             }
         }
+        public IEnumerable<Item> FindItems(string searchQuery)
+        {
+            List<Item> items = new List<Item>();
+            MySqlConnection MySqlConnection = Connection.CreateConnection();
+            string sql = @"SELECT * FROM shop.items 
+                          WHERE Name LIKE @search 
+                          OR Description LIKE @search 
+                          ORDER BY `Name`;";
+
+            MySqlCommand command = new MySqlCommand(sql, MySqlConnection);
+            command.Parameters.AddWithValue("@search", $"%{searchQuery}%");
+
+            MySqlDataReader ItemsData = command.ExecuteReader();
+
+            while (ItemsData.Read())
+            {
+                items.Add(new Item()
+                {
+                    Id = ItemsData.IsDBNull(0) ? -1 : ItemsData.GetInt32(0),
+                    Name = ItemsData.IsDBNull(1) ? "" : ItemsData.GetString(1),
+                    Description = ItemsData.IsDBNull(2) ? "" : ItemsData.GetString(2),
+                    Img = ItemsData.IsDBNull(3) ? "" : ItemsData.GetString(3),
+                    Price = ItemsData.IsDBNull(4) ? -1 : ItemsData.GetInt32(4),
+                    Category = ItemsData.IsDBNull(5) ? null : Categories.Where(x => x.Id == ItemsData.GetInt32(5)).FirstOrDefault()
+                });
+            }
+            MySqlConnection.Close();
+            return items;
+        }
     }
 }

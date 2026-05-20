@@ -6,6 +6,17 @@
 }
 
 <div>
+    <form method="get" action="@Url.Action("List")" id="searchForm">
+        <input type="text" name="searchString" value="@Model.SearchString"
+               placeholder="Введите название или описание..."
+               class="search-input" />
+        <button type="submit" class="search-btn">Найти</button>
+        @if (!string.IsNullOrEmpty(Model.SearchString))
+        {
+            <a href="@Url.Action("List", new { id = Model.SelectCategory, sortOrder = Model.SortOrder})"
+               class="clear-btn">Очистить</a>
+        }
+    </form>
     <select onChange="SelectCategory(this)">
         <option value="0">Выбрать ...</option>
         if (Category.Id == Model.SelectCategory)
@@ -24,9 +35,26 @@
             }
         }
     </select>
+    <select onChange="SortItems(this)">
+        <option value="">По умолчанию</option>
+        <option value="price_asc" selected="@(Model.SortOrder == "price_asc")">От дешевых</option>
+        <option value="price_desc" selected="@(Model.SortOrder == "price_desc")">От дорогих</option>
+    </select>
     <script>
         function SelectCategory(sender) {
-            window.location = "/item/List?id=" + sender.value;
+            var sortOrder = '@Model.SortOrder';
+            var searchString = '@Model.SearchString';
+            window.location.href = "/Item/List?id=" + sender.value +
+                                  "&sortOrder=" + sortOrder +
+                                  "&searchString=" + encodeURIComponent(searchString);
+        }
+
+        function SortItems(sender) {
+            var categoryId = @Model.SelectCategory;
+            var searchString = '@Model.SearchString';
+            window.location.href = "/Item/List?id=" + categoryId +
+                                  "&sortOrder=" + sender.value +
+                                  "&searchString=" + encodeURIComponent(searchString);
         }
     </script>
 </div>

@@ -61,7 +61,7 @@
 
 <h2>Все предметы</h2>
 @{
-    foreach (var item in Model.Items)
+    @foreach (var item in Model.Items)
     {
         if (Model.SelectCategory == -1 || item.Category.Id == Model.SelectCategory)
         {
@@ -70,8 +70,12 @@
                 <div class="data">
                     <h3>Модель: @item.Name</h3>
                     <div>Цена: @item.Price.ToString("c")</div>
-                    <div>Категория @item.Category.Name</div>
+                    <div>Категория @item.Category?.Name</div>
                     <div>Описание: @item.Description</div>
+                    <div class="actions">
+                        <a href="/Item/Update/@item.Id" class="edit-btn">Редактировать</a>
+                        <a href="/Item/Delete/@item.Id" class="delete-btn" onclick="return confirm('Удалить товар?')">Удалить</a>
+                    </div>
                 </div>
             </div>
         }

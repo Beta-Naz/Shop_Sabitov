@@ -2,17 +2,16 @@
 using Shop.Data.Interfaces;
 using Shop.Data.Models;
 using Shop.Data.ViewModell;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Shop.Controllers
 {
     public class ItemController : Controller
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private IItem _iAllItems;
         private ICategory _iAllCategories;
         private VMItems _vmItems = new VMItems();
-        public ItemController(IItem iAllItems, ICategory iAllCategories, IHostingEnvironment hostingEnvironment)
+        public ItemController(IItem iAllItems, ICategory iAllCategories, IWebHostEnvironment hostingEnvironment)
         {
             _iAllItems = iAllItems;
             _iAllCategories = iAllCategories;
@@ -58,23 +57,74 @@ namespace Shop.Controllers
         [HttpPost]
         public RedirectResult Add(string name, string description, IFormFile files, float price, int idCategory)
         {
-            if (files != null)
+            string fileName = "";
+
+            if (files != null && files.Length > 0)
             {
+                fileName = Guid.NewGuid().ToString() + Path.GetExtension(files.FileName);
                 var uploads = Path.Combine(_hostingEnvironment.WebRootPath, "img");
-                var filePath = Path.Combine(uploads, files.FileName);
-                files.CopyTo(new FileStream(filePath, FileMode.Create));
+                if (!Directory.Exists(uploads))
+                {
+                    Directory.CreateDirectory(uploads);
+                }
+
+                var filePath = Path.Combine(uploads, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    files.CopyTo(stream);
+                }
             }
 
             Item newItems = new Item();
             newItems.Name = name;
             newItems.Description = description;
-            newItems.Img = files.FileName;
+            newItems.Img = fileName;
             newItems.Price = Convert.ToInt32(price);
             newItems.Category = new Category() { Id = idCategory };
 
             int id = _iAllItems.Add(newItems);
 
-            return Redirect("/Items/Update?id=" + id);
+            return Redirect("/Item/List");
+        }
+        [HttpGet]
+        public ViewResult Update(int id)
+        {
+            Item item = _iAllItems.GetItem(id);
+            IEnumerable<Category> categories = _iAllCategories.AllCategories;
+
+            var viewModel = new VMUpdateItem
+            {
+                Item = item,
+                Categories = categories
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public RedirectResult Update(int id, string name, string description, float price, int idCategory)
+        {
+            Item existingItem = _iAllItems.GetItem(id);
+
+            if (existingItem != null)
+            {
+                existingItem.Name = name;
+                existingItem.Description = description;
+                existingItem.Price = Convert.ToInt32(price);
+                existingItem.Category = new Category() { Id = idCategory };
+
+                _iAllItems.Update(existingItem);
+            }
+
+            return Redirect("/Item/List");
+        }
+
+        [HttpGet]
+        public RedirectResult Delete(int id)
+        {
+            _iAllItems.Delete(id);
+            return Redirect("/Item/List");
         }
     }
 }

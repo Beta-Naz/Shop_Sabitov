@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Shop.Data.Classes;
 using Shop.Data.Interfaces;
 using Shop.Data.Models;
 using Shop.Data.ViewModell;
@@ -126,5 +127,15 @@ namespace Shop.Controllers
             _iAllItems.Delete(id);
             return Redirect("/Item/List");
         }
+        public ActionResult Basket(int idItem = -1)
+        {
+            if (idItem != -1)
+            {
+                Startup.BasketItem.Add(new ItemsBasket(1, _iAllItems.AllItems.Where(x => x.Id == idItem).First()));
+            }
+
+            return Json(Startup.BasketItem);
+        }
+
     }
 }

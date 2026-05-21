@@ -1,10 +1,12 @@
 using Shop.Data.DataBase;
 using Shop.Data.Interfaces;
+using Shop.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<ICategory, DBCategory>();
 builder.Services.AddTransient<IItem, DBItems>();
+public static List<ItemsBasket> BasketItem = new List<ItemsBasket>();
 
 builder.Services.AddMvc(op => op.EnableEndpointRouting = false);
 var app = builder.Build();

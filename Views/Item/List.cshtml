@@ -4,26 +4,7 @@
 @{
     Layout = "_Layout";
 }
-$(".item").children(".basket").children(".button").click(function () {
-    $(this).parent().children(".count").show();
-    $(this).hide();
-    $.ajax({
-        url: "@Url.Action("Basket", "Item")",
-        contentType: "application/json; charset=utf-8",
-        data: { idItem: $(this).attr('id') },
-        dataType: "json",
-        success: SuccessBasket,
-        error: AjaxError
-    });
-});
 
-function SuccessBasket(data) {
-    console.log(data);
-}
-
-function AjaxError() {
-    console.log("Ошибка выполнения ajax");
-}
 <div>
     <form method="get" action="@Url.Action("List")" id="searchForm">
         <input type="text" name="searchString" value="@Model.SearchString"
@@ -38,9 +19,13 @@ function AjaxError() {
     </form>
     <select onChange="SelectCategory(this)">
         <option value="0">Выбрать ...</option>
-        if (Category.Id == Model.SelectCategory)
+        @if (Model.SelectCategory == -1)
         {
-        <option selected="selected" value="-1">Все</option>
+            <option selected="selected" value="-1">Все</option>
+        }
+        else
+        {
+            <option value="-1">Все</option>
         }
         @foreach (var Category in Model.Categorys)
         {
@@ -59,90 +44,111 @@ function AjaxError() {
         <option value="price_asc" selected="@(Model.SortOrder == "price_asc")">От дешевых</option>
         <option value="price_desc" selected="@(Model.SortOrder == "price_desc")">От дорогих</option>
     </select>
-    <script>
-        function SelectCategory(sender) {
-            var sortOrder = '@Model.SortOrder';
-            var searchString = '@Model.SearchString';
-            window.location.href = "/Item/List?id=" + sender.value +
-                                  "&sortOrder=" + sortOrder +
-                                  "&searchString=" + encodeURIComponent(searchString);
-        }
-
-        function SortItems(sender) {
-            var categoryId = @Model.SelectCategory;
-            var searchString = '@Model.SearchString';
-            window.location.href = "/Item/List?id=" + categoryId +
-                                  "&sortOrder=" + sender.value +
-                                  "&searchString=" + encodeURIComponent(searchString);
-        }
-    </script>
 </div>
 
 <h2>Все предметы</h2>
-@{
-    @foreach (var item in Model.Items)
+@foreach (var item in Model.Items)
+{
+    if (Model.SelectCategory == -1 || item.Category.Id == Model.SelectCategory)
     {
-        if (Model.SelectCategory == -1 || item.Category.Id == Model.SelectCategory)
-        {
-            <div class="item">
-                <img src="@item.Img" />
-                <div class="basket">
-                    <div class="button" id="@item.Id">
-                        В корзину
-                    </div>
-                    <div class="count">
-                        <div class="button min">-</div>
-                        <div class="text">1</div>
-                        <div class="button max">+</div>
-                    </div>
+        <div class="item">
+            <img src="@item.Img" />
+            <div class="basket">
+                <div class="button" id="@item.Id">
+                    В корзину
                 </div>
-                <div class="data">
-                    <h3>Модель: @item.Name</h3>
-                    <div>Цена: @item.Price.ToString("c")</div>
-                    <div>Категория @item.Category?.Name</div>
-                    <div>Описание: @item.Description</div>
-                    <div class="actions">
-                        <a href="/Item/Update/@item.Id" class="edit-btn">Редактировать</a>
-                        <a href="/Item/Delete/@item.Id" class="delete-btn" onclick="return confirm('Удалить товар?')">Удалить</a>
-                    </div>
+                <div class="count" style="display:none">
+                    <div class="button min">-</div>
+                    <div class="text">1</div>
+                    <div class="button max">+</div>
                 </div>
             </div>
-        }
+            <div class="data">
+                <h3>Модель: @item.Name</h3>
+                <div>Цена: @item.Price.ToString("c")</div>
+                <div>Категория @item.Category?.Name</div>
+                <div>Описание: @item.Description</div>
+                <div class="actions">
+                    <a href="/Item/Update/@item.Id" class="edit-btn">Редактировать</a>
+                    <a href="/Item/Delete/@item.Id" class="delete-btn" onclick="return confirm('Удалить товар?')">Удалить</a>
+                </div>
+            </div>
+        </div>
     }
 }
-$(".count").children(".min").click(function () {
-    var idItem = $(this).parent().parent().children('.button').attr('id');
-    var count = $(this).parent().children(".text").text();
-    count--;
-    if (count == 0) {
-        $(this).parent().parent().children('.button').show();
-        $(this).parent().parent().children('.count').hide();
-    } else {
-        $(this).parent().children(".text").text(count);
-    }
-});
 
-$.ajax({
-    url: '@Url.Action("BasketCount", "Item")',
-    contentType: "application/json; charset=utf-8",
-    data: { idItem: idItem, count: count },
-    dataType: "json",
-    success: SuccessBasket,
-    error: AjaxError
-});
-$(".count").children(".max").click(function () {
-    var idItem = $(this).parent().parent().children('.button').attr('id');
-    var count = $(this).parent().children(".text").text();
-    count++;
-    $(this).parent().children(".text").text(count);
-
-    $.ajax({
-        url: '@Url.Action("BasketCount", "Item")',
-        contentType: "application/json; charset=utf-8",
-        data: { idItem: idItem, count: count },
-        dataType: "json",
-        success: SuccessBasket,
-        error: AjaxError
+<script>
+    $(".item").children(".basket").children(".button").click(function () {
+        $(this).parent().children(".count").show();
+        $(this).hide();
+        $.ajax({
+            url: "@Url.Action("Basket", "Item")",
+            contentType: "application/json; charset=utf-8",
+            data: { idItem: $(this).attr('id') },
+            dataType: "json",
+            success: SuccessBasket,
+            error: AjaxError
+        });
     });
-});
 
+    $(".count").children(".min").click(function () {
+        var idItem = $(this).parent().parent().children('.button').attr('id');
+        var count = parseInt($(this).parent().children(".text").text());
+        count--;
+        if (count == 0) {
+            $(this).parent().parent().children('.button').show();
+            $(this).parent().parent().children('.count').hide();
+        } else {
+            $(this).parent().children(".text").text(count);
+        }
+
+        $.ajax({
+            url: "@Url.Action("BasketCount", "Item")",
+            contentType: "application/json; charset=utf-8",
+            data: { idItem: idItem, count: count },
+            dataType: "json",
+            success: SuccessBasket,
+            error: AjaxError
+        });
+    });
+
+    $(".count").children(".max").click(function () {
+        var idItem = $(this).parent().parent().children('.button').attr('id');
+        var count = parseInt($(this).parent().children(".text").text());
+        count++;
+        $(this).parent().children(".text").text(count);
+
+        $.ajax({
+            url: "@Url.Action("BasketCount", "Item")",
+            contentType: "application/json; charset=utf-8",
+            data: { idItem: idItem, count: count },
+            dataType: "json",
+            success: SuccessBasket,
+            error: AjaxError
+        });
+    });
+
+    function SuccessBasket(data) {
+        console.log(data);
+    }
+
+    function AjaxError() {
+        console.log("Ошибка выполнения ajax");
+    }
+
+    function SelectCategory(sender) {
+        var sortOrder = '@Model.SortOrder';
+        var searchString = '@Model.SearchString';
+        window.location.href = "/Item/List?id=" + sender.value +
+                              "&sortOrder=" + sortOrder +
+                              "&searchString=" + encodeURIComponent(searchString);
+    }
+
+    function SortItems(sender) {
+        var categoryId = @Model.SelectCategory;
+        var searchString = '@Model.SearchString';
+        window.location.href = "/Item/List?id=" + categoryId +
+                              "&sortOrder=" + sender.value +
+                              "&searchString=" + encodeURIComponent(searchString);
+    }
+</script>

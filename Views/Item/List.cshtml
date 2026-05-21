@@ -77,6 +77,16 @@
                         <a href="/Item/Delete/@item.Id" class="delete-btn" onclick="return confirm('Удалить товар?')">Удалить</a>
                     </div>
                 </div>
+                <div class="basket">
+                    <div class="button" id="@item.id">
+                        В корзину
+                    </div>
+                    <div class="count">
+                        <div class="button min">-</div>
+                        <div class="text">1</div>
+                        <div class="button max">+</div>
+                    </div>
+                </div>
             </div>
         }
     }

@@ -4,10 +4,12 @@
     {
         public int Count { get; set; }
 
-        public ItemsBasket(int Count, Item item) : base(item)
+        public ItemsBasket(int count, Item item) : base(item)
         {
-            this.Count = Count;
+            this.Count = count;
         }
+
+        public ItemsBasket() { }
     }
 
 }

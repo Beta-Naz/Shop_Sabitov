@@ -1,20 +1,56 @@
 ﻿<!DOCTYPE html>
 <html>
-	<head>
-		<meta name="viewport" content="width=device-width"/>
-		<link rel="stylesheet" href="~/css/Style.css"/>
-		<title>@ViewBag.Title</title>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/css/Style.css" />
+    <title>@ViewBag.Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <a href="/Item/List">
+            <img src="~/img/icon.svg" />
+        </a>
+        <input class="search" placeholder="Поиск по сайту" />
+        <a href="/item/Basket" class="basket-link">
+            <img class="basket" src="~/img/basket.svg" />
+            <span id="basketCount" class="basket-count">0</span>
+        </a>
+    </div>
+    <div>
+        @RenderBody()
+    </div>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-	</head>
-	<body>
-		<div class="header">
-			<img src="~/img/icon.svg"/>
-			<input class="search" placeholder="Поиск по сайту"/>
-			<img class="basket" src="~/img/basket.svg"/>
-		</div>
-		<div>
-			@RenderBody()
-		</div>
-	</body>
+    <script>
+        function updateBasketCount() {
+            $.ajax({
+                url: "@Url.Action("GetBasketCount", "Item")",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    $("#basketCount").text(data.count);
+                },
+                error: function() {
+                    console.log("Ошибка обновления счетчика корзины");
+                }
+            });
+        }
+        function getTotalBasketCount() {
+            var total = 0;
+            $.ajax({
+                url: "@Url.Action("GetBasketCount", "Item")",
+                type: "GET",
+                async: false,
+                dataType: "json",
+                success: function(data) {
+                    total = data.count;
+                }
+            });
+            return total;
+        }
+        $(document).ready(function() {
+            updateBasketCount();
+        });
+    </script>
+</body>
 </html>

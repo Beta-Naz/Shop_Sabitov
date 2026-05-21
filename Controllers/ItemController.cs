@@ -131,27 +131,65 @@ namespace Shop.Controllers
         {
             if (idItem != -1)
             {
-                Startup.BasketItem.Add(new ItemsBasket(1, _iAllItems.AllItems.Where(x => x.Id == idItem).First()));
-            }
+                var existingItem = Startup.BasketItem.Find(x => x.Id == idItem);
 
-            return Json(Startup.BasketItem);
+                if (existingItem != null)
+                {
+                    existingItem.Count++;
+                }
+                else
+                {
+                    var item = _iAllItems.AllItems.FirstOrDefault(x => x.Id == idItem);
+                    if (item != null)
+                    {
+                        Startup.BasketItem.Add(new ItemsBasket(1, item));
+                    }
+                }
+            }
+            return View(Startup.BasketItem);
         }
         public ActionResult BasketCount(int idItem = -1, int count = -1)
         {
             if (idItem != -1)
             {
-                if (count == 0)
+                var item = Startup.BasketItem.Find(x => x.Id == idItem);
+
+                if (item != null)
                 {
-                    Startup.BasketItem.Remove(Startup.BasketItem.Find(x => x.Id == idItem));
-                }
-                else
-                {
-                    Startup.BasketItem.Find(x => x.Id == idItem).Count = count;
+                    if (count == 0)
+                    {
+                        Startup.BasketItem.Remove(item);
+                    }
+                    else
+                    {
+                        item.Count = count;
+                    }
                 }
             }
 
             return Json(Startup.BasketItem);
         }
-
+        [HttpGet]
+        public JsonResult GetBasketCount()
+        {
+            int totalCount = Startup.BasketItem.Sum(x => x.Count);
+            return Json(new { count = totalCount });
+        }
+        [HttpPost]
+        public JsonResult RemoveFromBasket(int idItem)
+        {
+            var item = Startup.BasketItem.FirstOrDefault(x => x.Id == idItem);
+            if (item != null)
+            {
+                Startup.BasketItem.Remove(item);
+            }
+            return Json(Startup.BasketItem);
+        }
+        [HttpPost]
+        public JsonResult ClearBasket()
+        {
+            Startup.BasketItem.Clear();
+            return Json(new { success = true });
+        }
     }
 }

@@ -1,0 +1,177 @@
+﻿@using Shop.Data.Models
+@model IEnumerable<ItemsBasket>
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Корзина";
+}
+
+<h2>Корзина</h2>
+
+@if (Model == null || Model.Count() == 0)
+{
+    <div class="empty-basket">
+        <p>Ваша корзина пуста</p>
+        <a href="/Item/List" class="continue-btn">Продолжить покупки</a>
+    </div>
+}
+else
+{
+    @foreach (var item in Model)
+    {
+        <div class="item" id="item-@item.Id">
+            <img src="@item.Img" />
+            <div class="basket">
+                <div class="count">
+                    <button class="min" data-id="@item.Id">-</button>
+                    <span class="text" id="count-@item.Id">@item.Count</span>
+                    <button class="max" data-id="@item.Id">+</button>
+                </div>
+            </div>
+            <div class="data">
+                <h3>Модель: @item.Name</h3>
+                <div>Цена: <span class="price-@item.Id">@item.Price.ToString("c")</span></div>
+                <div>Категория: @item.Category?.Name</div>
+                <div>Описание: @item.Description</div>
+                <div class="total">Сумма: <span id="total-@item.Id">@((item.Price * item.Count).ToString("c"))</span></div>
+                <div class="actions">
+                    <button class="delete-btn" data-id="@item.Id">Удалить</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="basket-footer">
+        <div class="grand-total">
+            <strong>Итого: </strong>
+            <span id="grandTotal">@Model.Sum(x => x.Price * x.Count).ToString("c")</span>
+        </div>
+        <div class="basket-actions">
+            <button id="clearBasket" class="clear-basket-btn">Очистить корзину</button>
+            <a href="/Item/List" class="continue-btn">Продолжить покупки</a>
+            <button class="checkout-btn">Оформить заказ</button>
+        </div>
+    </div>
+}
+
+<script>
+    function updateTotal(idItem, price, count) {
+        var total = price * count;
+        $("#total-" + idItem).text(new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(total));
+        updateGrandTotal();
+        updateBasketCount();
+    }
+
+    function updateGrandTotal() {
+        var grandTotal = 0;
+        $("[id^='total-']").each(function() {
+            var totalText = $(this).text();
+            var total = parseFloat(totalText.replace(/[^0-9.-]+/g, ""));
+            if (!isNaN(total)) {
+                grandTotal += total;
+            }
+        });
+        $("#grandTotal").text(new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(grandTotal));
+    }
+
+    $(".min").click(function() {
+        var idItem = $(this).data("id");
+        var countSpan = $("#count-" + idItem);
+        var count = parseInt(countSpan.text());
+
+        if (count > 1) {
+            count--;
+            countSpan.text(count);
+
+            var priceText = $(".price-" + idItem).text();
+            var price = parseFloat(priceText.replace(/[^0-9.-]+/g, ""));
+
+            $.ajax({
+                url: "@Url.Action("BasketCount", "Item")",
+                type: "POST",
+                data: { idItem: idItem, count: count },
+                success: function() {
+                    updateTotal(idItem, price, count);
+                },
+                error: function() {
+                    console.log("Ошибка обновления");
+                }
+            });
+        } else if (count == 1) {
+            $("#item-" + idItem).remove();
+            $.ajax({
+                url: "@Url.Action("RemoveFromBasket", "Item")",
+                type: "POST",
+                data: { idItem: idItem },
+                success: function() {
+                    updateGrandTotal();
+                    updateBasketCount();
+                    if ($(".item").length == 0) {
+                        location.reload();
+                    }
+                },
+                error: function() {
+                    console.log("Ошибка удаления");
+                }
+            });
+        }
+    });
+
+    $(".max").click(function() {
+        var idItem = $(this).data("id");
+        var countSpan = $("#count-" + idItem);
+        var count = parseInt(countSpan.text());
+        count++;
+        countSpan.text(count);
+
+        var priceText = $(".price-" + idItem).text();
+        var price = parseFloat(priceText.replace(/[^0-9.-]+/g, ""));
+
+        $.ajax({
+            url: "@Url.Action("BasketCount", "Item")",
+            type: "POST",
+            data: { idItem: idItem, count: count },
+            success: function() {
+                updateTotal(idItem, price, count);
+            },
+            error: function() {
+                console.log("Ошибка обновления");
+            }
+        });
+    });
+
+    $(".delete-btn").click(function() {
+        var idItem = $(this).data("id");
+        $("#item-" + idItem).remove();
+        $.ajax({
+            url: "@Url.Action("RemoveFromBasket", "Item")",
+            type: "POST",
+            data: { idItem: idItem },
+            success: function() {
+                updateGrandTotal();
+                updateBasketCount();
+                if ($(".item").length == 0) {
+                    location.reload();
+                }
+            },
+            error: function() {
+                console.log("Ошибка удаления");
+            }
+        });
+    });
+
+    $("#clearBasket").click(function() {
+        if (confirm("Очистить всю корзину?")) {
+            $.ajax({
+                url: "@Url.Action("ClearBasket", "Item")",
+                type: "POST",
+                success: function() {
+                    location.reload();
+                },
+                error: function() {
+                    console.log("Ошибка очистки");
+                }
+            });
+        }
+    });
+</script>
